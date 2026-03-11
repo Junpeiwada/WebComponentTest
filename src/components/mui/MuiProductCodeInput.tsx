@@ -158,6 +158,7 @@ export function MuiProductCodeInput({ value, onChange }: ProductCodeInputProps) 
   })
   const [error, setError] = useState(false)
   const [dialogOpen, setDialogOpen] = useState(false)
+  const composingRef = useRef(false)
 
   const lookup = (codeStr: string) => {
     if (codeStr === '') {
@@ -212,10 +213,21 @@ export function MuiProductCodeInput({ value, onChange }: ProductCodeInputProps) 
             error={error}
             onChange={(e) => {
               const v = e.target.value
+              if (composingRef.current) {
+                setInputValue(v)
+                return
+              }
               if (v === '' || /^\d+$/.test(v)) {
                 setInputValue(v)
                 if (error) setError(false)
               }
+            }}
+            onCompositionStart={() => { composingRef.current = true }}
+            onCompositionEnd={(e) => {
+              composingRef.current = false
+              const v = (e.target as HTMLInputElement).value.replace(/\D/g, '')
+              setInputValue(v)
+              if (error && v !== '') setError(false)
             }}
             onKeyDown={handleKeyDown}
             onBlur={handleBlur}
