@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react'
+import { Routes, Route, useParams, useNavigate, Navigate } from 'react-router'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
@@ -86,11 +87,23 @@ const sliderItems: { key: keyof ThemeSettings; label: string; min: number; max: 
 
 type LibTab = 'mui' | 'antd'
 
-export default function App() {
-  const [activeTab, setActiveTab] = useState<TabKey>('date')
+const tabKeys = tabs.map((t) => t.key) as readonly TabKey[]
+
+function isTabKey(value: string | undefined): value is TabKey {
+  return tabKeys.includes(value as TabKey)
+}
+
+function AppContent() {
+  const { tabKey } = useParams<{ tabKey: string }>()
+  const navigate = useNavigate()
+  const activeTab: TabKey = isTabKey(tabKey) ? tabKey : 'date'
   const [libTab, setLibTab] = useState<LibTab>('mui')
   const [settings, setSettings] = useState<ThemeSettings>({ ...defaultSettings })
   const current = tabs.find((t) => t.key === activeTab)!
+
+  const setActiveTab = (key: TabKey) => {
+    navigate(`/${key}`, { replace: false })
+  }
 
   const muiTheme = useMemo(
     () =>
@@ -314,5 +327,14 @@ export default function App() {
         </ConfigProvider>
       </LocalizationProvider>
     </ThemeProvider>
+  )
+}
+
+export default function App() {
+  return (
+    <Routes>
+      <Route path="/:tabKey" element={<AppContent />} />
+      <Route path="/" element={<Navigate to="/date" replace />} />
+    </Routes>
   )
 }
