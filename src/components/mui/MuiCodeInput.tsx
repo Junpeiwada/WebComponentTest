@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import Autocomplete from '@mui/material/Autocomplete'
 import TextField from '@mui/material/TextField'
 import type { SelectOption } from '../../types'
@@ -6,30 +6,60 @@ import type { SelectOption } from '../../types'
 /**
  * コード入力コンポーネント (MUI版)
  *
- * コード値を入力すると「値:ラベル」形式で自動補完・確定する。
- * - 候補が1つに絞り込まれると自動確定
+ * コード値を入力すると「値:ラベル」形式で自動補完する。
+ * - ドロップダウンから選択で確定
+ * - blur時に候補が1つなら自動確定、それ以外はクリア
  * - 確定後のバックスペースで全クリア→再入力可能
- * - blur時に未確定なら入力をクリア
+ * - Enterキーは消費しない（フォーカス移動用に親へ伝搬させる）
  */
 export function MuiCodeInput<T extends number | string>({
   options,
   placeholder,
   onChange,
+  onDropdownOpenChange,
 }: {
   options: SelectOption<T>[]
   placeholder?: string
   onChange: (value: T | null) => void
+  onDropdownOpenChange?: (open: boolean) => void
 }) {
   const [input, setInput] = useState('')
   const [confirmed, setConfirmed] = useState(false)
+  const inputRef = useRef(input)
+  inputRef.current = input
+  const confirmedRef = useRef(confirmed)
+  confirmedRef.current = confirmed
 
   const format = (o: SelectOption<T>) => `${o.value}:${o.label}`
+
+  const tryConfirm = () => {
+    if (confirmedRef.current) return
+    const val = inputRef.current
+    if (!val) return
+    const matches = options.filter(
+      (o) =>
+        String(o.value).startsWith(val) ||
+        format(o).startsWith(val) ||
+        o.label.includes(val)
+    )
+    if (matches.length === 1) {
+      setInput(format(matches[0]))
+      onChange(matches[0].value)
+      setConfirmed(true)
+    } else {
+      setInput('')
+      onChange(null)
+      setConfirmed(false)
+    }
+  }
 
   return (
     <Autocomplete
       size="small"
       freeSolo
       options={options}
+      onOpen={() => onDropdownOpenChange?.(true)}
+      onClose={() => onDropdownOpenChange?.(false)}
       getOptionLabel={(opt) => {
         if (typeof opt === 'string') return opt
         return format(opt)
@@ -57,19 +87,7 @@ export function MuiCodeInput<T extends number | string>({
           return
         }
         setInput(newInput)
-        const matches = options.filter(
-          (o) =>
-            format(o).startsWith(newInput) ||
-            String(o.value).startsWith(newInput)
-        )
-        if (matches.length === 1) {
-          setInput(format(matches[0]))
-          onChange(matches[0].value)
-          setConfirmed(true)
-        } else {
-          onChange(null)
-          setConfirmed(false)
-        }
+        setConfirmed(false)
       }}
       onChange={(_e, val) => {
         if (val && typeof val !== 'string') {
@@ -78,12 +96,7 @@ export function MuiCodeInput<T extends number | string>({
           setConfirmed(true)
         }
       }}
-      onBlur={() => {
-        if (!confirmed) {
-          setInput('')
-          onChange(null)
-        }
-      }}
+      onBlur={tryConfirm}
       renderOption={(props, option) => {
         const { key, ...rest } = props as React.HTMLAttributes<HTMLLIElement> & { key: string }
         return (
@@ -92,7 +105,7 @@ export function MuiCodeInput<T extends number | string>({
           </li>
         )
       }}
-      renderInput={(params) => <TextField {...params} placeholder={placeholder} />}
+      renderInput={(params) => <TextField {...params} placeholder={placeholder} onFocus={(e) => e.target.select()} />}
     />
   )
 }

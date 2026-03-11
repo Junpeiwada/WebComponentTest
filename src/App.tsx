@@ -41,6 +41,9 @@ import { AntdTable } from './components/antd/AntdTable'
 import { MuiProductCodeDemo } from './components/mui/MuiProductCodeDemo'
 import { AntdProductCodeDemo } from './components/antd/AntdProductCodeDemo'
 
+import { MuiOrderForm } from './components/mui/MuiOrderForm'
+import { AntdOrderForm } from './components/antd/AntdOrderForm'
+
 const DRAWER_WIDTH = 220
 
 const tabs = [
@@ -51,6 +54,7 @@ const tabs = [
   { key: 'autocomplete', label: 'Autocomplete', description: 'label/valueマッピング、freeSolo、複数選択、グループ化、非同期読み込み' },
   { key: 'table', label: 'テーブル', description: 'ソート、フィルタ、ページネーション、行選択、カスタムレンダー' },
   { key: 'code', label: 'CD入力', description: '商品コード検索、モーダル検索、エラー制御' },
+  { key: 'order', label: '発注入力', description: 'Enterキーによるフォーカス制御デモ — 発注入力フォーム' },
 ] as const
 
 type TabKey = (typeof tabs)[number]['key']
@@ -63,6 +67,7 @@ const tabContent: Record<TabKey, { mui: React.ReactNode; antd: React.ReactNode }
   autocomplete: { mui: <MuiAutocomplete />, antd: <AntdAutocomplete /> },
   table: { mui: <MuiTable />, antd: <AntdTable /> },
   code: { mui: <MuiProductCodeDemo />, antd: <AntdProductCodeDemo /> },
+  order: { mui: <MuiOrderForm />, antd: <AntdOrderForm /> },
 }
 
 interface ThemeSettings {
@@ -300,7 +305,7 @@ function AppContent() {
                 </Typography>
               </Box>
 
-              {activeTab === 'table' ? (
+              {activeTab === 'table' || activeTab === 'order' ? (
                 <>
                   <Tabs
                     value={libTab}

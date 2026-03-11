@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect, useRef, useCallback } from 'react'
-import { InputNumber, Input, Button, Modal, Table } from 'antd'
+import { Input, Button, Modal, Table } from 'antd'
 import type { InputRef } from 'antd'
 import { SearchOutlined } from '@ant-design/icons'
 import type { Product } from '../../types'
@@ -132,21 +132,23 @@ function ProductSearchDialog({
 }
 
 export function AntdProductCodeInput({ value, onChange }: ProductCodeInputProps) {
-  const [inputValue, setInputValue] = useState<number | null>(value)
+  const [inputValue, setInputValue] = useState(value?.toString() ?? '')
   const [productName, setProductName] = useState(() => {
     if (value == null) return ''
     return (products as Product[]).find((p) => p.code === value)?.name ?? ''
   })
   const [error, setError] = useState(false)
   const [dialogOpen, setDialogOpen] = useState(false)
+  const composingRef = useRef(false)
 
-  const lookup = (code: number | null) => {
-    if (code == null) {
+  const lookup = (codeStr: string) => {
+    if (codeStr === '') {
       setError(false)
       setProductName('')
       onChange(null, '')
       return
     }
+    const code = Number(codeStr)
     const found = (products as Product[]).find((p) => p.code === code)
     if (found) {
       setError(false)
@@ -160,9 +162,6 @@ export function AntdProductCodeInput({ value, onChange }: ProductCodeInputProps)
   }
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      lookup(inputValue)
-    }
     if (e.key === 'F2') {
       e.preventDefault()
       setDialogOpen(true)
@@ -174,31 +173,49 @@ export function AntdProductCodeInput({ value, onChange }: ProductCodeInputProps)
   }
 
   const handleSelect = (product: Product) => {
-    setInputValue(product.code)
+    setInputValue(String(product.code))
     setProductName(product.name)
     setError(false)
     onChange(product.code, product.name)
     setDialogOpen(false)
   }
 
+  // 全角数字→半角数字変換
+  const toHalfWidth = (s: string) => s.replace(/[０-９]/g, (c) => String.fromCharCode(c.charCodeAt(0) - 0xFEE0))
+
   return (
     <>
       <div>
         <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
-          <InputNumber
+          <Input
             size="middle"
             placeholder="商品コード"
             value={inputValue}
             status={error ? 'error' : undefined}
-            onChange={(v) => {
+            onChange={(e) => {
+              const v = e.target.value
+              if (composingRef.current) {
+                setInputValue(v)
+                return
+              }
+              const half = toHalfWidth(v)
+              if (half === '' || /^\d+$/.test(half)) {
+                setInputValue(half)
+                if (error) setError(false)
+              }
+            }}
+            onCompositionStart={() => { composingRef.current = true }}
+            onCompositionEnd={(e) => {
+              composingRef.current = false
+              const half = toHalfWidth((e.target as HTMLInputElement).value)
+              const v = half.replace(/\D/g, '')
               setInputValue(v)
-              if (error) setError(false)
+              if (error && v !== '') setError(false)
             }}
             onKeyDown={handleKeyDown}
             onBlur={handleBlur}
-            style={{ width: 140 }}
-            min={1}
-            controls={false}
+            onFocus={(e) => e.target.select()}
+            style={{ width: 140, textAlign: 'right' }}
           />
           <Button
             icon={<SearchOutlined />}

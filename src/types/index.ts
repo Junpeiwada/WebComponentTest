@@ -39,4 +39,5 @@ export type DateChangeHandler = (display: string, value: string | null, dayjsVal
 export interface Product {
   code: number
   name: string
+  unitPrice: number
 }

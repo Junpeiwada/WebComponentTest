@@ -181,9 +181,6 @@ export function MuiProductCodeInput({ value, onChange }: ProductCodeInputProps) 
   }
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      lookup(inputValue)
-    }
     if (e.key === 'F2') {
       e.preventDefault()
       setDialogOpen(true)
@@ -231,11 +228,13 @@ export function MuiProductCodeInput({ value, onChange }: ProductCodeInputProps) 
             }}
             onKeyDown={handleKeyDown}
             onBlur={handleBlur}
+            onFocus={(e) => e.target.select()}
             sx={{ width: 140 }}
             slotProps={{
               htmlInput: {
                 inputMode: 'numeric',
                 pattern: '[0-9]*',
+                style: { textAlign: 'right' },
               },
             }}
           />
