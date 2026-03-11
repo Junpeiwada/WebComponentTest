@@ -3,3 +3,4 @@ dist
 .vite
 .venv
 *.local
+.claude/
