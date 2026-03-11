@@ -53,7 +53,7 @@ const tabs = [
   { key: 'text', label: '文字列入力', description: '基本テキスト、文字数制限、パスワード、TextArea、prefix/suffix、エラー表示' },
   { key: 'autocomplete', label: 'Autocomplete', description: 'label/valueマッピング、freeSolo、複数選択、グループ化、非同期読み込み' },
   { key: 'table', label: 'テーブル', description: 'ソート、フィルタ、ページネーション、行選択、カスタムレンダー' },
-  { key: 'code', label: 'CD入力', description: '商品コード検索、モーダル検索、エラー制御' },
+  { key: 'code', label: 'CD入力', description: '商品コード検索、モーダル検索、エラー制御、長いエラーメッセージの表示' },
   { key: 'order', label: '発注入力', description: 'Enterキーによるフォーカス制御デモ — 発注入力フォーム' },
 ] as const
 

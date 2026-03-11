@@ -215,7 +215,7 @@ export function AntdProductCodeInput({ value, onChange }: ProductCodeInputProps)
             onKeyDown={handleKeyDown}
             onBlur={handleBlur}
             onFocus={(e) => e.target.select()}
-            style={{ width: 140, textAlign: 'right' }}
+            style={{ width: 95, textAlign: 'right' }}
           />
           <Button
             icon={<SearchOutlined />}
@@ -227,7 +227,7 @@ export function AntdProductCodeInput({ value, onChange }: ProductCodeInputProps)
         </div>
         {error ? (
           <div style={{ color: '#ff4d4f', fontSize: 12, marginTop: 4, marginLeft: 2 }}>
-            存在しない商品コードです
+            【長いエラーメッセージのデモ】存在しない商品コードです。入力された値はマスタに登録されていません。正しい商品コードを入力するか、F2キーで検索ダイアログを開いて商品を選択してください。なお、新規商品の場合は先に商品マスタへの登録が必要です。
           </div>
         ) : (
           <div style={{ color: '#bbb', fontSize: 12, marginTop: 4, marginLeft: 2 }}>

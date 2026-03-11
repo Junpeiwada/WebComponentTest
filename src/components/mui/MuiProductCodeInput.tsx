@@ -229,7 +229,7 @@ export function MuiProductCodeInput({ value, onChange }: ProductCodeInputProps) 
             onKeyDown={handleKeyDown}
             onBlur={handleBlur}
             onFocus={(e) => e.target.select()}
-            sx={{ width: 140 }}
+            sx={{ width: 95 }}
             slotProps={{
               htmlInput: {
                 inputMode: 'numeric',
@@ -252,7 +252,7 @@ export function MuiProductCodeInput({ value, onChange }: ProductCodeInputProps) 
         </Box>
         {error ? (
           <Typography variant="caption" color="error" sx={{ ml: 1.5 }}>
-            存在しない商品コードです
+            【長いエラーメッセージのデモ】存在しない商品コードです。入力された値はマスタに登録されていません。正しい商品コードを入力するか、F2キーで検索ダイアログを開いて商品を選択してください。なお、新規商品の場合は先に商品マスタへの登録が必要です。
           </Typography>
         ) : (
           <Typography variant="caption" color="text.disabled" sx={{ ml: 1.5 }}>
