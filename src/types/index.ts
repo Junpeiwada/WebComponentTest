@@ -35,3 +35,8 @@ export interface InputChangeHandler<T = unknown> {
 }
 
 export type DateChangeHandler = (display: string, value: string | null, dayjsValue: Dayjs | null) => void
+
+export interface Product {
+  code: number
+  name: string
+}

@@ -37,6 +37,9 @@ import { AntdTextInput } from './components/antd/AntdTextInput'
 import { AntdAutocomplete } from './components/antd/AntdAutocomplete'
 import { AntdTable } from './components/antd/AntdTable'
 
+import { MuiProductCodeDemo } from './components/mui/MuiProductCodeDemo'
+import { AntdProductCodeDemo } from './components/antd/AntdProductCodeDemo'
+
 const DRAWER_WIDTH = 220
 
 const tabs = [
@@ -46,6 +49,7 @@ const tabs = [
   { key: 'text', label: '文字列入力', description: '基本テキスト、文字数制限、パスワード、TextArea、prefix/suffix、エラー表示' },
   { key: 'autocomplete', label: 'Autocomplete', description: 'label/valueマッピング、freeSolo、複数選択、グループ化、非同期読み込み' },
   { key: 'table', label: 'テーブル', description: 'ソート、フィルタ、ページネーション、行選択、カスタムレンダー' },
+  { key: 'code', label: 'CD入力', description: '商品コード検索、モーダル検索、エラー制御' },
 ] as const
 
 type TabKey = (typeof tabs)[number]['key']
@@ -57,6 +61,7 @@ const tabContent: Record<TabKey, { mui: React.ReactNode; antd: React.ReactNode }
   text: { mui: <MuiTextInput />, antd: <AntdTextInput /> },
   autocomplete: { mui: <MuiAutocomplete />, antd: <AntdAutocomplete /> },
   table: { mui: <MuiTable />, antd: <AntdTable /> },
+  code: { mui: <MuiProductCodeDemo />, antd: <AntdProductCodeDemo /> },
 }
 
 interface ThemeSettings {
