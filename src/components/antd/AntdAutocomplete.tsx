@@ -31,7 +31,7 @@ export function AntdAutocomplete() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
       <div>
-        <label style={labelStyle}>コード入力（1→1:いいえ, 2→2:はい）</label>
+        <label style={labelStyle}>コード入力（1→1:いいえ, 2→2:はい, 22→22:不明, 44→44:該当なし）</label>
         <AntdCodeInput
           options={yesNoOptions}
           placeholder="1 or 2 を入力"

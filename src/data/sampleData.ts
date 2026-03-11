@@ -4,6 +4,8 @@ import type { SelectOption, GroupedSelectOption, PrefectureOption } from '../typ
 export const yesNoOptions: SelectOption<number>[] = [
   { label: 'いいえ', value: 1 },
   { label: 'はい', value: 2 },
+  { label: '不明', value: 22 },
+  { label: '該当なし', value: 44 },
 ]
 
 // ステータス

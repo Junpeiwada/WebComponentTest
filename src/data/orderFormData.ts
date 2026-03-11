@@ -11,6 +11,15 @@ export const suppliers: SelectOption<number>[] = [
   { label: '中村運輸', value: 8 },
   { label: '小林機械', value: 9 },
   { label: '加藤建設', value: 10 },
+  { label: '松本精密工業', value: 11 },
+  { label: '井上テクノロジー', value: 12 },
+  { label: '木村包装', value: 21 },
+  { label: '林プラスチック', value: 22 },
+  { label: '清水電子部品', value: 31 },
+  { label: '森川ロジスティクス', value: 32 },
+  { label: '池田化成', value: 41 },
+  { label: '橋本工業', value: 42 },
+  { label: '藤田産業', value: 52 },
 ]
 
 export const warehouses: SelectOption<number>[] = [
