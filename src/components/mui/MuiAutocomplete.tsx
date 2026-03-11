@@ -25,7 +25,7 @@ export function MuiAutocomplete() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
       <div>
-        <label style={labelStyle}>コード入力（1→1:いいえ, 2→2:はい, 22→22:不明, 44→44:該当なし）</label>
+        <label style={labelStyle}>&#x2699; コード入力（1→1:いいえ, 2→2:はい, 22→22:不明, 44→44:該当なし）<span style={{ color: 'darkgreen' }}>【独自実装】</span></label>
         <MuiCodeInput
           options={yesNoOptions}
           placeholder="1 or 2 を入力"

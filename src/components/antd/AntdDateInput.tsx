@@ -23,7 +23,7 @@ export function AntdDateInput() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
       <div>
-        <label style={labelStyle}>柔軟な日付入力（0101, 250203, 1/1, 25/7/4, 2026/8/9 等）</label>
+        <label style={labelStyle}>&#x2699; 柔軟な日付入力（0101, 250203, 1/1, 25/7/4, 2026/8/9 等）<span style={{ color: 'darkgreen' }}>【独自実装】</span></label>
         <FlexDateInputAntd onChange={handleFlexChange} />
         <ValueDisplay value={sendValue('raw')} />
         <p style={{ fontSize: 11, color: '#999', margin: '4px 0 0' }}>

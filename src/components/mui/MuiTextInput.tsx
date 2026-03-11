@@ -67,10 +67,9 @@ export function MuiTextInput() {
       <div>
         <label style={labelStyle}>複数行（TextArea）</label>
         <TextField
-          size="small"
           fullWidth
           multiline
-          rows={3}
+          minRows={3}
           value={values['textarea'] ?? ''}
           onChange={handleChange('textarea')}
           placeholder="複数行テキスト"
