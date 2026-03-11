@@ -163,6 +163,10 @@ export function AntdProductCodeInput({ value, onChange }: ProductCodeInputProps)
     if (e.key === 'Enter') {
       lookup(inputValue)
     }
+    if (e.key === 'F2') {
+      e.preventDefault()
+      setDialogOpen(true)
+    }
   }
 
   const handleBlur = () => {
@@ -204,9 +208,13 @@ export function AntdProductCodeInput({ value, onChange }: ProductCodeInputProps)
             {productName}
           </span>
         </div>
-        {error && (
+        {error ? (
           <div style={{ color: '#ff4d4f', fontSize: 12, marginTop: 4, marginLeft: 2 }}>
             存在しない商品コードです
+          </div>
+        ) : (
+          <div style={{ color: '#bbb', fontSize: 12, marginTop: 4, marginLeft: 2 }}>
+            F2: 検索ダイアログ
           </div>
         )}
       </div>

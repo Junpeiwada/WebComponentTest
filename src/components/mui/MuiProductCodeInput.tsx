@@ -183,6 +183,10 @@ export function MuiProductCodeInput({ value, onChange }: ProductCodeInputProps) 
     if (e.key === 'Enter') {
       lookup(inputValue)
     }
+    if (e.key === 'F2') {
+      e.preventDefault()
+      setDialogOpen(true)
+    }
   }
 
   const handleBlur = () => {
@@ -235,9 +239,13 @@ export function MuiProductCodeInput({ value, onChange }: ProductCodeInputProps) 
             {productName}
           </Typography>
         </Box>
-        {error && (
+        {error ? (
           <Typography variant="caption" color="error" sx={{ ml: 1.5 }}>
             存在しない商品コードです
+          </Typography>
+        ) : (
+          <Typography variant="caption" color="text.disabled" sx={{ ml: 1.5 }}>
+            F2: 検索ダイアログ
           </Typography>
         )}
       </div>
