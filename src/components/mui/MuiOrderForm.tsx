@@ -24,7 +24,7 @@ function FieldText({
 }: {
   name: string; label: string; placeholder?: string; sx?: object
 }) {
-  const { inputRef, handleKeyDown, handleFocus } = useFieldRegistration(name)
+  const { inputRef } = useFieldRegistration(name)
   return (
     <Box sx={sx}>
       <label style={labelStyle}>{label}</label>
@@ -33,8 +33,7 @@ function FieldText({
         fullWidth
         placeholder={placeholder}
         inputRef={inputRef}
-        onKeyDown={handleKeyDown}
-        onFocus={handleFocus}
+        onFocus={(e) => e.target.select()}
       />
     </Box>
   )
@@ -47,7 +46,7 @@ function FieldNumeric({
   value: number | undefined; onValueChange: (v: number | undefined) => void
   sx?: object
 }) {
-  const { inputRef, handleKeyDown, handleFocus } = useFieldRegistration(name)
+  const { inputRef } = useFieldRegistration(name)
   return (
     <Box sx={sx}>
       <label style={labelStyle}>{label}</label>
@@ -58,8 +57,7 @@ function FieldNumeric({
         thousandSeparator=","
         placeholder={placeholder}
         getInputRef={inputRef}
-        onKeyDown={handleKeyDown}
-        onFocus={handleFocus}
+        onFocus={(e: React.FocusEvent<HTMLInputElement>) => e.target.select()}
         value={value ?? ''}
         onValueChange={(v) => onValueChange(v.floatValue)}
         slotProps={{ htmlInput: { style: { textAlign: 'right' } } }}
@@ -74,28 +72,17 @@ function FieldCodeInput<T extends number | string>({
   name: string; label: string; options: SelectOption<T>[]; placeholder?: string
   sx?: object
 }) {
-  const { inputRef, handleKeyDown } = useFieldRegistration(name)
+  const { inputRef } = useFieldRegistration(name)
   const [, setVal] = useState<T | null>(null)
-  const dropdownOpenRef = useRef(false)
 
   return (
     <Box sx={sx}>
       <label style={labelStyle}>{label}</label>
-      <div
-        onKeyDownCapture={(e) => {
-          if (e.nativeEvent.isComposing) return
-          if (e.key === 'Enter' && !e.defaultPrevented && !dropdownOpenRef.current) {
-            handleKeyDown(e)
-          }
-        }}
-      >
-        <MuiCodeInput
-          options={options}
-          placeholder={placeholder}
-          onChange={setVal}
-          onDropdownOpenChange={(open) => { dropdownOpenRef.current = open }}
-        />
-      </div>
+      <MuiCodeInput
+        options={options}
+        placeholder={placeholder}
+        onChange={setVal}
+      />
       <input
         ref={inputRef}
         style={{ position: 'absolute', opacity: 0, width: 0, height: 0, pointerEvents: 'none' }}
@@ -112,20 +99,11 @@ function FieldCodeInput<T extends number | string>({
 }
 
 function FieldDate({ name, label, sx }: { name: string; label: string; sx?: object }) {
-  const { inputRef, handleKeyDown } = useFieldRegistration(name)
+  const { inputRef } = useFieldRegistration(name)
   return (
     <Box sx={sx}>
       <label style={labelStyle}>{label}</label>
-      <div
-        onKeyDownCapture={(e) => {
-          if (e.nativeEvent.isComposing) return
-          if (e.key === 'Enter') {
-            handleKeyDown(e)
-          }
-        }}
-      >
-        <FlexDateInputMui placeholder="日付を入力" />
-      </div>
+      <FlexDateInputMui placeholder="日付を入力" />
       <input
         ref={inputRef}
         style={{ position: 'absolute', opacity: 0, width: 0, height: 0, pointerEvents: 'none' }}
@@ -148,18 +126,7 @@ function FieldProductCode({
   onProductChange?: (code: number | null, product: Product | null) => void
   sx?: object
 }) {
-  const { inputRef, handleKeyDown } = useFieldRegistration(name)
-
-  const handleProductKeyDown = useCallback(
-    (e: React.KeyboardEvent) => {
-      if (e.nativeEvent.isComposing) return
-      if (e.key === 'Enter') {
-        e.preventDefault()
-        handleKeyDown(e)
-      }
-    },
-    [handleKeyDown]
-  )
+  const { inputRef } = useFieldRegistration(name)
 
   const handleChange = useCallback(
     (code: number | null, _name: string) => {
@@ -176,9 +143,7 @@ function FieldProductCode({
   return (
     <Box sx={sx}>
       <label style={labelStyle}>{label}</label>
-      <div onKeyDownCapture={handleProductKeyDown}>
-        <MuiProductCodeInput value={null} onChange={handleChange} />
-      </div>
+      <MuiProductCodeInput value={null} onChange={handleChange} />
       <input
         ref={inputRef}
         style={{ position: 'absolute', opacity: 0, width: 0, height: 0, pointerEvents: 'none' }}
@@ -306,7 +271,7 @@ export function MuiOrderForm() {
     <FieldProvider order={fieldOrder}>
       <Box sx={{ maxWidth: 900 }}>
         <Typography variant="body2" color="text.secondary" sx={{ mb: 1.5, fontSize: 12 }}>
-          Enterキーで次のフィールドへ移動します。最後のフィールドから先頭に戻ります。
+          フォーカス制御デモ（Enterキー移動は現在無効）
         </Typography>
 
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5, position: 'relative' }}>

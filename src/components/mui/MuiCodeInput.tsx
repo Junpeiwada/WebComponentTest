@@ -10,18 +10,15 @@ import type { SelectOption } from '../../types'
  * - ドロップダウンから選択で確定
  * - blur時に候補が1つなら自動確定、それ以外はクリア
  * - 確定後のバックスペースで全クリア→再入力可能
- * - Enterキーは消費しない（フォーカス移動用に親へ伝搬させる）
  */
 export function MuiCodeInput<T extends number | string>({
   options,
   placeholder,
   onChange,
-  onDropdownOpenChange,
 }: {
   options: SelectOption<T>[]
   placeholder?: string
   onChange: (value: T | null) => void
-  onDropdownOpenChange?: (open: boolean) => void
 }) {
   const [input, setInput] = useState('')
   const [confirmed, setConfirmed] = useState(false)
@@ -29,6 +26,7 @@ export function MuiCodeInput<T extends number | string>({
   inputRef.current = input
   const confirmedRef = useRef(confirmed)
   confirmedRef.current = confirmed
+  const lastKeyRef = useRef('')
 
   const format = (o: SelectOption<T>) => `${o.value}:${o.label}`
 
@@ -42,15 +40,18 @@ export function MuiCodeInput<T extends number | string>({
         format(o).startsWith(val) ||
         o.label.includes(val)
     )
-    if (matches.length === 1) {
-      setInput(format(matches[0]))
-      onChange(matches[0].value)
-      setConfirmed(true)
-    } else {
+    if (matches.length === 0) {
       setInput('')
       onChange(null)
       setConfirmed(false)
+      return
     }
+    // 完全一致するvalue値があれば優先、なければ最初の候補
+    const exact = matches.find((o) => String(o.value) === val)
+    const pick = exact ?? matches[0]
+    setInput(format(pick))
+    onChange(pick.value)
+    setConfirmed(true)
   }
 
   return (
@@ -58,8 +59,6 @@ export function MuiCodeInput<T extends number | string>({
       size="small"
       freeSolo
       options={options}
-      onOpen={() => onDropdownOpenChange?.(true)}
-      onClose={() => onDropdownOpenChange?.(false)}
       getOptionLabel={(opt) => {
         if (typeof opt === 'string') return opt
         return format(opt)
@@ -79,8 +78,8 @@ export function MuiCodeInput<T extends number | string>({
           setConfirmed(false)
           return
         }
-        // 確定済みの状態でバックスペース → 全クリアしてやり直し
-        if (confirmed && newInput.length < input.length) {
+        // 確定済みの状態でバックスペース/Delete → 全クリアしてやり直し
+        if (confirmed && (lastKeyRef.current === 'Backspace' || lastKeyRef.current === 'Delete')) {
           setInput('')
           onChange(null)
           setConfirmed(false)
@@ -105,7 +104,14 @@ export function MuiCodeInput<T extends number | string>({
           </li>
         )
       }}
-      renderInput={(params) => <TextField {...params} placeholder={placeholder} onFocus={(e) => e.target.select()} />}
+      renderInput={(params) => (
+        <TextField
+          {...params}
+          placeholder={placeholder}
+          onFocus={(e) => e.target.select()}
+          onKeyDown={(e) => { lastKeyRef.current = e.key }}
+        />
+      )}
     />
   )
 }

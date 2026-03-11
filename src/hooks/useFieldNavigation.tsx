@@ -60,7 +60,7 @@ export function FieldProvider({ order, children }: FieldProviderProps) {
 
 /**
  * 各フィールドが呼ぶhook。
- * refCallback を input 要素の ref に渡し、onKeyDown をキーハンドラに追加する。
+ * refCallback を input 要素の ref に渡す。
  */
 export function useFieldRegistration(name: string) {
   const ctx = useContext(FieldNavigationContext)
@@ -69,29 +69,10 @@ export function useFieldRegistration(name: string) {
   useEffect(() => {
     if (!ctx) return
     ctx.register(name, {
-      focus: () => {
-        inputRef.current?.focus()
-        inputRef.current?.select()
-      },
+      focus: () => inputRef.current?.focus(),
     })
     return () => ctx.unregister(name)
   }, [name, ctx])
 
-  const handleKeyDown = useCallback(
-    (e: React.KeyboardEvent) => {
-      if (!ctx) return
-      if (e.nativeEvent.isComposing) return
-      if (e.key === 'Enter') {
-        e.preventDefault()
-        ctx.moveNext(name)
-      }
-    },
-    [name, ctx]
-  )
-
-  const handleFocus = useCallback((e: React.FocusEvent<HTMLInputElement>) => {
-    e.target.select()
-  }, [])
-
-  return { inputRef, handleKeyDown, handleFocus }
+  return { inputRef }
 }

@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback, useEffect } from 'react'
-import { Input, Divider, Typography } from 'antd'
+import { Input, Typography } from 'antd'
 import type { InputRef } from 'antd'
 import { NumericFormat } from 'react-number-format'
 import { FieldProvider, useFieldRegistration } from '../../hooks/useFieldNavigation'
@@ -24,7 +24,7 @@ function FieldText({
 }: {
   name: string; label: string; placeholder?: string; style?: React.CSSProperties
 }) {
-  const { inputRef, handleKeyDown, handleFocus } = useFieldRegistration(name)
+  const { inputRef } = useFieldRegistration(name)
   const antdRef = useRef<InputRef>(null)
 
   return (
@@ -33,8 +33,7 @@ function FieldText({
       <Input
         ref={antdRef}
         placeholder={placeholder}
-        onKeyDown={handleKeyDown}
-        onFocus={handleFocus}
+        onFocus={(e) => e.target.select()}
       />
       <input
         ref={inputRef}
@@ -54,7 +53,7 @@ function FieldNumeric({
   value: number | undefined; onValueChange: (v: number | undefined) => void
   style?: React.CSSProperties
 }) {
-  const { inputRef, handleKeyDown, handleFocus } = useFieldRegistration(name)
+  const { inputRef } = useFieldRegistration(name)
   const wrapperRef = useRef<HTMLDivElement>(null)
   return (
     <div style={style} ref={wrapperRef}>
@@ -63,8 +62,7 @@ function FieldNumeric({
         customInput={Input}
         thousandSeparator=","
         placeholder={placeholder}
-        onKeyDown={handleKeyDown}
-        onFocus={handleFocus}
+        onFocus={(e: React.FocusEvent<HTMLInputElement>) => e.target.select()}
         value={value ?? ''}
         onValueChange={(v) => onValueChange(v.floatValue)}
         style={{ textAlign: 'right' }}
@@ -89,30 +87,18 @@ function FieldCodeInput<T extends number | string>({
   name: string; label: string; options: SelectOption<T>[]; placeholder?: string
   style?: React.CSSProperties
 }) {
-  const { inputRef, handleKeyDown } = useFieldRegistration(name)
+  const { inputRef } = useFieldRegistration(name)
   const [, setVal] = useState<T | null>(null)
-  const dropdownOpenRef = useRef(false)
   const wrapperRef = useRef<HTMLDivElement>(null)
 
   return (
     <div style={style} ref={wrapperRef}>
       <label style={labelStyle}>{label}</label>
-      <div
-        onKeyDownCapture={(e) => {
-          if (e.nativeEvent.isComposing) return
-          if (e.key === 'Enter' && !dropdownOpenRef.current) {
-            e.stopPropagation()
-            handleKeyDown(e)
-          }
-        }}
-      >
-        <AntdCodeInput
-          options={options}
-          placeholder={placeholder}
-          onChange={setVal}
-          onDropdownOpenChange={(open) => { dropdownOpenRef.current = open }}
-        />
-      </div>
+      <AntdCodeInput
+        options={options}
+        placeholder={placeholder}
+        onChange={setVal}
+      />
       <input
         ref={inputRef}
         style={{ position: 'absolute', opacity: 0, width: 0, height: 0, pointerEvents: 'none' }}
@@ -128,22 +114,13 @@ function FieldCodeInput<T extends number | string>({
 }
 
 function FieldDate({ name, label, style }: { name: string; label: string; style?: React.CSSProperties }) {
-  const { inputRef, handleKeyDown } = useFieldRegistration(name)
+  const { inputRef } = useFieldRegistration(name)
   const wrapperRef = useRef<HTMLDivElement>(null)
 
   return (
     <div style={style} ref={wrapperRef}>
       <label style={labelStyle}>{label}</label>
-      <div
-        onKeyDownCapture={(e) => {
-          if (e.nativeEvent.isComposing) return
-          if (e.key === 'Enter') {
-            handleKeyDown(e)
-          }
-        }}
-      >
-        <FlexDateInputAntd placeholder="日付を入力" />
-      </div>
+      <FlexDateInputAntd placeholder="日付を入力" />
       <input
         ref={inputRef}
         style={{ position: 'absolute', opacity: 0, width: 0, height: 0, pointerEvents: 'none' }}
@@ -165,19 +142,8 @@ function FieldProductCode({
   onProductChange?: (code: number | null, product: Product | null) => void
   style?: React.CSSProperties
 }) {
-  const { inputRef, handleKeyDown } = useFieldRegistration(name)
+  const { inputRef } = useFieldRegistration(name)
   const wrapperRef = useRef<HTMLDivElement>(null)
-
-  const handleProductKeyDown = useCallback(
-    (e: React.KeyboardEvent) => {
-      if (e.nativeEvent.isComposing) return
-      if (e.key === 'Enter') {
-        e.preventDefault()
-        handleKeyDown(e)
-      }
-    },
-    [handleKeyDown]
-  )
 
   const handleChange = useCallback(
     (code: number | null, _name: string) => {
@@ -194,9 +160,7 @@ function FieldProductCode({
   return (
     <div style={style} ref={wrapperRef}>
       <label style={labelStyle}>{label}</label>
-      <div onKeyDownCapture={handleProductKeyDown}>
-        <AntdProductCodeInput value={null} onChange={handleChange} />
-      </div>
+      <AntdProductCodeInput value={null} onChange={handleChange} />
       <input
         ref={inputRef}
         style={{ position: 'absolute', opacity: 0, width: 0, height: 0, pointerEvents: 'none' }}
@@ -319,7 +283,7 @@ export function AntdOrderForm() {
     <FieldProvider order={fieldOrder}>
       <div style={{ maxWidth: 900 }}>
         <Text type="secondary" style={{ display: 'block', marginBottom: 12, fontSize: 12 }}>
-          Enterキーで次のフィールドへ移動します。最後のフィールドから先頭に戻ります。
+          フォーカス制御デモ（Enterキー移動は現在無効）
         </Text>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12, position: 'relative' }}>
